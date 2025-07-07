@@ -13,7 +13,12 @@ app = FastAPI()
 # Load from environment
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_IDS = list(map(int, os.getenv("CHAT_IDS", "").split(",")))
-FETCH_URL = os.getenv("FETCH_URL")
+FETCH_URL = os.getenv("FETCH_URL") or ""
+
+print(f"TELEGRAM_BOT_TOKEN: {TELEGRAM_BOT_TOKEN}")
+print(f"CHAT_IDS: {CHAT_IDS}")
+print(f"FETCH_URL: {FETCH_URL}")
+
 
 DATA_FILE = "hash_store.json"
 
@@ -34,7 +39,11 @@ def save_hash(hash_val):
 def fetch_ipo_data():
     response = requests.get(FETCH_URL)
     response.raise_for_status()
-    return response.json()
+    try:
+        return json.loads(response.text)
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error: {e}")
+        raise
 
 
 def generate_message(data, changed: bool):
@@ -73,7 +82,12 @@ def send_telegram_message(chat_id, message):
 def ipo_check_job():
     try:
         ipo_data = fetch_ipo_data()
-        json_string = json.dumps(ipo_data, sort_keys=True)
+        try:
+            json_string = json.dumps(ipo_data, sort_keys=True, default=str)
+        except TypeError as e:
+            print("Serialization error:", e)
+            print("Problematic data snippet:", ipo_data)
+            raise
         current_hash = hashlib.sha256(json_string.encode("utf-8")).hexdigest()
 
         previous_hash = load_hash()
