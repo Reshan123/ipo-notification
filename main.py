@@ -94,11 +94,17 @@ def ipo_check_job():
 
 
 # Scheduler to run job daily at specific time
-scheduler = BackgroundScheduler()
-scheduler.add_job(ipo_check_job, "cron", hour=7, minute=0)  # Run daily at 7:00 AM
-scheduler.start()
+# scheduler = BackgroundScheduler()
+# scheduler.add_job(ipo_check_job, "cron", hour=7, minute=0)  # Run daily at 7:00 AM
+# scheduler.start()
 
 
 @app.get("/")
 def read_root():
     return {"message": "IPO Monitor Running"}
+
+@app.get("/run-check")
+def run_check():
+    ipo_check_job()
+    return {"status": "Job manually triggered"}
+
