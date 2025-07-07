@@ -56,14 +56,14 @@ def generate_message(data, changed: bool):
     else:
         message = (
             "🟢<b>IPO data has not changed</b>🟢\n"
-            'Visit <a href="https://www.cse.lk/pages/primary-issues/primary-issues.component.html">this link</a> for more info.\n\n'
+            'Visit <a href="https://www.cse.lk/pages/primary-issues/primary-issues.component.html">this link</a> for more info.\n\n\n'
         )
 
     for ipo in sorted_data:
         if ipo["category"] == "Equity IPO":
-            message += f"<b>{ipo['category']}</b> - <ins>{ipo['title']}</ins>\n"
+            message += f"<b>{ipo['category']}</b> - <ins>{ipo['title']}</ins>\n\n"
         else:
-            message += f"{ipo['category']} - {ipo['title']}\n"
+            message += f"{ipo['category']} - {ipo['title']}\n\n"
 
     return message
 
